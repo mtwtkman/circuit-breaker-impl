@@ -57,10 +57,6 @@ class CircuitBreaker:
         if self.state == OPEN:
             self.monitor.alert('open circuit')
 
-    @property
-    def get(self):
-        return self._circuit_result
-
     def call(self, *args, **kwargs):
         if self.state in (CLOSED, HALF_OPEN):
             try:
