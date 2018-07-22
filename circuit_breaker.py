@@ -76,3 +76,22 @@ class CircuitBreaker:
 class CircuitBreakerMonitor:
     def alert(self, msg):
         print(msg)
+
+
+def decorator(
+    invocation_timeout=None,
+    failure_threshold=None,
+    reset_timeout=None,
+    monitor=None,
+    max_workers=None,
+):
+    def _inner(func):
+        return CircuitBreaker(
+            func,
+            invocation_timeout,
+            failure_threshold,
+            reset_timeout,
+            monitor,
+            max_workers,
+        )
+    return _inner
