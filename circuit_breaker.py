@@ -60,10 +60,13 @@ class CircuitBreaker:
     def call(self, *args, **kwargs):
         if self.state in (CLOSED, HALF_OPEN):
             try:
-                return self.do_call(*args, **kwargs)
+                result = self.do_call(*args, **kwargs)
             except (TimeoutError, Exception) as e:
                 self.record_failure()
                 raise
+            else:
+                self.reset()
+                return result
         elif self.state == OPEN:
             raise CircuitBreakerOpenError
 

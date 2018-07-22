@@ -104,3 +104,27 @@ class CircuitBreakerTest(TestCase):
             pass
         with self.assertRaises(SomethingWrong):
             obj.call()
+            self.assertEqual(obj.state, OPEN)
+
+    def test_half_open_transit_to_closed_when_succeded(self):
+        obj = self.makeOne(sleep)
+        try:
+            obj.call(self.invocation_timeout + 0.1)
+        except:
+            pass
+        time.sleep(self.reset_timeout)
+        self.assertEqual(obj.state, HALF_OPEN)
+        obj.call(self.invocation_timeout - 0.001)
+        self.assertEqual(obj.state, CLOSED)
+
+    def test_half_open_transit_to_open_when_failed(self):
+        obj = self.makeOne(sleep)
+        try:
+            obj.call(self.invocation_timeout + 0.1)
+        except:
+            pass
+        time.sleep(self.reset_timeout)
+        self.assertEqual(obj.state, HALF_OPEN)
+        with self.assertRaises(TimeoutError):
+            obj.call(self.invocation_timeout)
+        self.assertEqual(obj.state, OPEN)
